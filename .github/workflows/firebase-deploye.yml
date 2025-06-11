@@ -30,14 +30,18 @@ jobs:
             npm run build -- --configuration development
           fi
 
+      - name: Determine Firebase project
+        id: firebase-project
+        run: |
+          if [[ "${GITHUB_REF##*/}" == "production" ]]; then
+            echo "project=production" >> $GITHUB_OUTPUT
+          else
+            echo "project=development" >> $GITHUB_OUTPUT
+          fi
+
       - name: Deploy to Firebase Hosting
-        uses: w9jds/firebase-action@v12
+        uses: w9jds/firebase-action@v2.0.0
         with:
-          args: |
-            if [[ "${GITHUB_REF##*/}" == "production" ]]; then
-              deploy --project production --only hosting
-            else
-              deploy --project development --only hosting
-            fi
+          args: deploy --project ${{ steps.firebase-project.outputs.project }} --only hosting
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
