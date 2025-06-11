@@ -31,7 +31,7 @@ jobs:
           fi
 
       - name: Deploy to Firebase Hosting
-        uses: w9jds/firebase-action@v13
+        uses: w9jds/firebase-action@v12
         with:
           args: |
             if [[ "${GITHUB_REF##*/}" == "production" ]]; then
