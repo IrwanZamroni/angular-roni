@@ -1,0 +1,43 @@
+name: CI/CD Angular Firebase
+
+on:
+  push:
+    branches:
+      - development
+      - production
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Angular app
+        run: |
+          if [[ "${GITHUB_REF##*/}" == "production" ]]; then
+            npm run build -- --configuration production
+          else
+            npm run build -- --configuration development
+          fi
+
+      - name: Deploy to Firebase Hosting
+        uses: w9jds/firebase-action@v13
+        with:
+          args: |
+            if [[ "${GITHUB_REF##*/}" == "production" ]]; then
+              deploy --project production --only hosting
+            else
+              deploy --project development --only hosting
+            fi
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
