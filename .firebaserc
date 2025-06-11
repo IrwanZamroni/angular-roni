@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "my-app-angular-dev",
+    "production": "my-app-angular-production"
+  }
+}
